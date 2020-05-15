@@ -1,21 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SociallMediaApp">
+    tools:context=".SociallMediaApp"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
-        android:text="Welcome"
-        android:textSize="22dp"
         android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:text="Welcome"
+        android:textSize="22dp" />
+
+    <ImageView
+        android:id="@+id/placeHolder"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        app:srcCompat="@drawable/place" />
+
+    <Button
+        android:id="@+id/btnshareImage"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Share Image" />
+
+    <EditText
+        android:id="@+id/edtdes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:visibility="gone" />
+
+    <ListView
+        android:id="@+id/ListView"
+        android:layout_width="400dp"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
