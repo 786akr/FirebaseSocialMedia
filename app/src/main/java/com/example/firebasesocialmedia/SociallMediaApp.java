@@ -18,6 +18,7 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,8 +26,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -39,9 +42,10 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
-public class SociallMediaApp extends AppCompatActivity {
+public class SociallMediaApp extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private FirebaseAuth mAuth;
     private EditText edtdes;
     private Button btnshareImage;
@@ -51,6 +55,9 @@ public class SociallMediaApp extends AppCompatActivity {
     private String imageId;
     private ArrayAdapter arrayAdapter;
     private ArrayList arrayList;
+    private ArrayList<String> uid;
+    private String ImageDownloadLink;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +67,9 @@ public class SociallMediaApp extends AppCompatActivity {
         btnshareImage = findViewById(R.id.btnshareImage);
         placeHolder = findViewById(R.id.placeHolder);
         ListView = findViewById(R.id.listView);
+        ListView.setOnItemClickListener(this);
         arrayList = new ArrayList();
+        uid = new ArrayList();
         arrayAdapter= new ArrayAdapter(SociallMediaApp.this,android.R.layout.simple_list_item_1,arrayList);
         ListView.setAdapter(arrayAdapter);
         placeHolder.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +133,6 @@ public class SociallMediaApp extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.Logout) {
-
             Logout();
         }
         return super.onOptionsItemSelected(item);
@@ -163,7 +171,34 @@ public class SociallMediaApp extends AppCompatActivity {
                  // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                  // ...
                  Toast.makeText(SociallMediaApp.this, "Upload Process was Successful", Toast.LENGTH_SHORT).show();
-listview();
+                 edtdes.setVisibility(View.VISIBLE);
+                 FirebaseDatabase.getInstance().getReference().child("my_Users").addChildEventListener(new ChildEventListener() {
+                     @Override
+                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                          uid.add(dataSnapshot.getKey());
+                         String Username= (String) dataSnapshot.child("userame").getValue();
+                         arrayList.add(Username);
+                         arrayAdapter.notifyDataSetChanged(); }
+                     @Override
+                     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                     }
+                     @Override
+                     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                     }
+                     @Override
+                     public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                     }
+                     @Override
+                     public void onCancelled(@NonNull DatabaseError databaseError) {
+                     }
+                 });
+                 taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                     @Override
+                     public void onComplete(@NonNull Task<Uri> task) {
+                         ImageDownloadLink = task.getResult().toString();
+                     }
+                 });
              }
          });
      }else{
@@ -171,36 +206,14 @@ listview();
      }
      }
 
-     private void listview(){
-        edtdes.setVisibility(View.VISIBLE);
-         FirebaseDatabase.getInstance().getReference().child("my_Users").addChildEventListener(new ChildEventListener() {
-             @Override
-             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                     String Username= (String) dataSnapshot.child("userame").getValue();
-             arrayList.add(Username);
-                     arrayAdapter.notifyDataSetChanged();
 
-             }
-
-             @Override
-             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-             }
-
-             @Override
-             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-             }
-
-             @Override
-             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-             }
-
-             @Override
-             public void onCancelled(@NonNull DatabaseError databaseError) {
-
-             }
-         });
-     }
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        HashMap<String,String>  dataMap=new HashMap<>();
+        dataMap.put("fromwhom",FirebaseAuth.getInstance().getCurrentUser().getDisplayName() );
+        dataMap.put("imageIdentifier",imageId);
+        dataMap.put("ImageLink",ImageDownloadLink);
+        dataMap.put("des",edtdes.getText().toString());
+       FirebaseDatabase.getInstance().getReference().child("my_Users").child(uid.get(position)).child("receive post").push().setValue(dataMap);
+    }
 }
