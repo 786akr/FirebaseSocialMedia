@@ -18,6 +18,7 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -27,12 +28,17 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class SociallMediaApp extends AppCompatActivity {
@@ -43,7 +49,8 @@ public class SociallMediaApp extends AppCompatActivity {
     private ListView ListView;
     private Bitmap bitmap;
     private String imageId;
-
+    private ArrayAdapter arrayAdapter;
+    private ArrayList arrayList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +59,10 @@ public class SociallMediaApp extends AppCompatActivity {
         edtdes = findViewById(R.id.edtdes);
         btnshareImage = findViewById(R.id.btnshareImage);
         placeHolder = findViewById(R.id.placeHolder);
-        ListView = findViewById(R.id.ListView);
+        ListView = findViewById(R.id.listView);
+        arrayList = new ArrayList();
+        arrayAdapter= new ArrayAdapter(SociallMediaApp.this,android.R.layout.simple_list_item_1,arrayList);
+        ListView.setAdapter(arrayAdapter);
         placeHolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,6 +163,7 @@ public class SociallMediaApp extends AppCompatActivity {
                  // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                  // ...
                  Toast.makeText(SociallMediaApp.this, "Upload Process was Successful", Toast.LENGTH_SHORT).show();
+listview();
              }
          });
      }else{
@@ -160,4 +171,36 @@ public class SociallMediaApp extends AppCompatActivity {
      }
      }
 
+     private void listview(){
+        edtdes.setVisibility(View.VISIBLE);
+         FirebaseDatabase.getInstance().getReference().child("my_Users").addChildEventListener(new ChildEventListener() {
+             @Override
+             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                     String Username= (String) dataSnapshot.child("userame").getValue();
+             arrayList.add(Username);
+                     arrayAdapter.notifyDataSetChanged();
+
+             }
+
+             @Override
+             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+             }
+
+             @Override
+             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+             }
+
+             @Override
+             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+             }
+
+             @Override
+             public void onCancelled(@NonNull DatabaseError databaseError) {
+
+             }
+         });
+     }
 }
