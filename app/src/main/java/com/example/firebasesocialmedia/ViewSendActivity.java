@@ -44,7 +44,7 @@ public class ViewSendActivity extends AppCompatActivity  implements AdapterView.
      listView.setOnItemLongClickListener(this);
      sendImage=findViewById(R.id.sendImage);
      txtdes=findViewById(R.id.txtdescription);
-     listView.setOnItemClickListener(this);
+     listView.setOnItemClickListener (this);
      username=new ArrayList<>();
      dataSnapshotarraylist=new ArrayList();
      arrayAdapter=new ArrayAdapter(ViewSendActivity.this,android.R.layout.simple_list_item_1,username);
