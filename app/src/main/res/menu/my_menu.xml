@@ -5,5 +5,11 @@
     <item
         android:id="@+id/Logout"
         android:title="Logout"
+        app:showAsAction="always"
+        android:orderInCategory="100"/>
+    <item
+        android:id="@+id/ViewPost"
+        android:title="View Post"
+        android:orderInCategory="99"
         app:showAsAction="always" />
 </menu>

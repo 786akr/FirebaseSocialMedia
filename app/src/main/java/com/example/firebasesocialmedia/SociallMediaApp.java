@@ -135,9 +135,13 @@ public class SociallMediaApp extends AppCompatActivity implements AdapterView.On
         if (item.getItemId() == R.id.Logout) {
             Logout();
         }
+        if (item.getItemId() == R.id.ViewPost) {
+  Intent intent=new Intent(SociallMediaApp.this,ViewSendActivity.class);
+          startActivity(intent);
+        }
         return super.onOptionsItemSelected(item);
-    }
 
+    }
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -193,7 +197,10 @@ public class SociallMediaApp extends AppCompatActivity implements AdapterView.On
                      public void onCancelled(@NonNull DatabaseError databaseError) {
                      }
                  });
-                 taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                 taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnCompleteListener(
+
+
+                         new OnCompleteListener<Uri>() {
                      @Override
                      public void onComplete(@NonNull Task<Uri> task) {
                          ImageDownloadLink = task.getResult().toString();
@@ -214,6 +221,12 @@ public class SociallMediaApp extends AppCompatActivity implements AdapterView.On
         dataMap.put("imageIdentifier",imageId);
         dataMap.put("ImageLink",ImageDownloadLink);
         dataMap.put("des",edtdes.getText().toString());
-       FirebaseDatabase.getInstance().getReference().child("my_Users").child(uid.get(position)).child("receive post").push().setValue(dataMap);
+       FirebaseDatabase.getInstance().getReference().child("my_Users").child(uid.get(position)).child("receive post").push().setValue(dataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+           @Override
+           public void onComplete(@NonNull Task<Void> task) {
+               Toast.makeText(SociallMediaApp.this, "Data is send", Toast.LENGTH_SHORT).show();
+
+           }
+       });
     }
 }

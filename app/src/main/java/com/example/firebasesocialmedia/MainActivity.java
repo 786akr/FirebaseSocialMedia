@@ -62,9 +62,7 @@ public class MainActivity extends AppCompatActivity  {
                     .child(task.getResult().getUser()
                             .getUid()).child("userame")
                     .setValue(edtUsername.getText().toString());
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(edtUsername.getText().toString())
                 .build();
 
